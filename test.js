@@ -1,70 +1,61 @@
-var assert = require('chai').assert;
-var parse = require('esprima-fb').parse;
-var originalKeys = require('./keys');
+const assert = require('chai').assert;
+const parse = require('espree').parse;
+const originalKeys = require('./keys');
 
-describe('works', function () {
-	var code = ['class MyClass{',
-		'x: number;',
-		'y: number;',
-		'constructor(x: number, y: number){',
-			'this.x = x;',
-			'this.y = y;',
-		'}',
-		'render(){',
-			'return <namespace:tag textAttr="value" exprAttr={expr} {...spreadAttr}><object.prop>!</object.prop>{}</namespace:tag>',
-		'}',
-	'}'].join('\n');
+describe('works', () => {
+	const code = 'const test = <><namespace:tag textAttr="value" exprAttr={expr} {...spreadAttr}><object.prop>!</object.prop>{}</namespace:tag></>;';
 
-	var ast = parse(code);
+	const ast = parse(code, {
+		ecmaVersion: 6,
+		ecmaFeatures: {
+			jsx: true
+		}
+	});
 
-	var expectedKeys = [
-		'ClassProperty',
-		'TypeAnnotation',
-		'NumberTypeAnnotation',
-		'ClassProperty',
-		'TypeAnnotation',
-		'NumberTypeAnnotation',
-		'XJSElement',
-		'XJSOpeningElement',
-		'XJSNamespacedName',
-		'XJSIdentifier',
-		'XJSIdentifier',
-		'XJSAttribute',
-		'XJSIdentifier',
-		'XJSAttribute',
-		'XJSIdentifier',
-		'XJSExpressionContainer',
-		'XJSSpreadAttribute',
-		'XJSClosingElement',
-		'XJSNamespacedName',
-		'XJSIdentifier',
-		'XJSIdentifier',
-		'XJSElement',
-		'XJSOpeningElement',
-		'XJSMemberExpression',
-		'XJSIdentifier',
-		'XJSIdentifier',
-		'XJSClosingElement',
-		'XJSMemberExpression',
-		'XJSIdentifier',
-		'XJSIdentifier',
-		'XJSExpressionContainer',
-		'XJSEmptyExpression'
+	const expectedKeys = [
+		'JSXFragment',
+		'JSXElement',
+		'JSXOpeningElement',
+		'JSXNamespacedName',
+		'JSXIdentifier',
+		'JSXIdentifier',
+		'JSXAttribute',
+		'JSXIdentifier',
+		'JSXAttribute',
+		'JSXIdentifier',
+		'JSXExpressionContainer',
+		'JSXSpreadAttribute',
+		'JSXClosingElement',
+		'JSXNamespacedName',
+		'JSXIdentifier',
+		'JSXIdentifier',
+		'JSXElement',
+		'JSXOpeningElement',
+		'JSXMemberExpression',
+		'JSXIdentifier',
+		'JSXIdentifier',
+		'JSXClosingElement',
+		'JSXMemberExpression',
+		'JSXIdentifier',
+		'JSXIdentifier',
+		'JSXText',
+		'JSXExpressionContainer',
+		'JSXEmptyExpression'
 	];
 
-	beforeEach(function () {
-		for (var key in require.cache) {
+	beforeEach(() => {
+		for (const key in require.cache) {
 			delete require.cache[key];
 		}
 	});
 
-	it('directly from dependency', function () {
-		var traverse = require('./').traverse;
-		var actualKeys = [];
-		var actualTypeKeys = [];
+	it('directly from dependency', () => {
+		const traverse = require('./').traverse;
+		const actualKeys = [];
+		const actualTypeKeys = [];
 
 		traverse(ast, {
-			enter: function (node) {
+			enter: (node) => {
 				if (originalKeys[node.type] != null) {
 					actualKeys.push(node.type);
 				}
@@ -74,13 +65,13 @@ describe('works', function () {
 		assert.deepEqual(actualKeys, expectedKeys);
 	});
 
-	it('in injected mode', function () {
+	it('in injected mode', () => {
 		require('./');
-		var traverse = require('estraverse').traverse;
-		var actualKeys = [];
+		const traverse = require('estraverse').traverse;
+		const actualKeys = [];
 
 		traverse(ast, {
-			enter: function (node) {
+			enter: (node) => {
 				if (originalKeys[node.type] != null) {
 					actualKeys.push(node.type);
 				}
@@ -90,14 +81,14 @@ describe('works', function () {
 		assert.deepEqual(actualKeys, expectedKeys);
 	});
 
-	it('in single-pass mode', function () {
-		var traverse = require('estraverse').traverse;
-		var keys = require('./keys');
+	it('in single-pass mode', () => {
+		const traverse = require('estraverse').traverse;
+		const keys = require('./keys');
 
-		var actualKeys = [];
+		const actualKeys = [];
 
 		traverse(ast, {
-			enter: function (node) {
+			enter: (node) => {
 				if (originalKeys[node.type] != null) {
 					actualKeys.push(node.type);
 				}
@@ -105,9 +96,9 @@ describe('works', function () {
 			keys: keys
 		});
 
-		assert.throws(function () {
+		assert.throws(() => {
 			traverse(ast, {
-				enter: function () {}
+				enter: () => {}
 			});
 		});
 
