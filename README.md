@@ -1,7 +1,7 @@
 estraverse-jsx
 ==============
 
-#### _estraverse-fb fork without Flow_
+[![Build Status](https://api.travis-ci.org/reeFridge/estraverse-jsx.svg?branch=master)](https://travis-ci.org/reeFridge/estraverse-jsx) 
 
 Drop-in for estraverse that enables traversal over JSX nodes using monkey-patching technique.
 
