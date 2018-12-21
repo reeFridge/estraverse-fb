@@ -3,7 +3,7 @@
   "version": "1.4.0",
   "description": "Drop-in for estraverse that enables traversal over JSX nodes.",
   "main": "estraverse-jsx.js",
-  "repository": "reeFridge/estraverse-fb",
+  "repository": "reeFridge/estraverse-jsx",
   "keywords": [
     "traverse",
     "ast",
